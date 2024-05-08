@@ -7,9 +7,9 @@ import (
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "base",
-	Short: "Base is the primary command for the Base-Graph CLI",
-	Long: `Base is a CLI application designed for creating and managing
+	Use:   "baseql",
+	Short: "Baseql is the primary command for the Base-Graph CLI",
+	Long: `Baseql is a CLI application designed for creating and managing
 GraphQL-based projects and APIs. It provides tools to generate necessary boilerplate,
 manage database interactions, and more.`,
 	// Uncomment the following line if your bare application has an action associated with it:

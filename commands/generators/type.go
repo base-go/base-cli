@@ -2,58 +2,67 @@ package generators
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"embed"
+
+	"github.com/spf13/cobra"
 )
 
-// GraphQLType represents a simple structure for a GraphQL type.
-type GraphQLType struct {
-	Name   string
-	Fields []GraphQLField
+// Embed the types templates
+//
+//go:embed templates/types/*
+var typesTemplates embed.FS
+
+var TypeCmd = &cobra.Command{
+	Use:   "types [module] [fields]",
+	Short: "Generates GraphQL type definitions for a module",
+	Long: `Generates GraphQL type definitions for the specified module.
+Example usage:
+    base generate types Post title:string content:string`,
+	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		moduleName := args[0]
+
+		fieldsSpecs := args[1:]
+		fields, err := parseFields(fieldsSpecs)
+		if err != nil {
+			fmt.Println("Error parsing fields:", err)
+			return
+		}
+		if err := generateTypes(moduleName, fields); err != nil {
+			fmt.Println("Error generating types for module:", err)
+			return
+		}
+		fmt.Printf("Successfully generated types for module: %s\n", moduleName)
+	},
 }
 
-// GraphQLField represents the fields in a GraphQL type.
-type GraphQLField struct {
-	Name string
-	Type string
-}
-
-// NewGraphQLType creates a new GraphQLType with the specified name and fields.
-func NewGraphQLType(name string, fields []GraphQLField) *GraphQLType {
-	return &GraphQLType{
-		Name:   name,
-		Fields: fields,
+func generateTypes(moduleName string, fields []Field) error {
+	baseDir := filepath.Join("app", moduleName, "types")
+	if err := os.MkdirAll(baseDir, os.ModePerm); err != nil {
+		return err
 	}
-}
 
-// GenerateGoStruct generates a Go struct representation of the GraphQL type.
-func (gt *GraphQLType) GenerateGoStruct() string {
-	result := fmt.Sprintf("type %s struct {\n", gt.Name)
-	for _, field := range gt.Fields {
-		result += fmt.Sprintf("\t%s %s\n", field.Name, goType(field.Type))
-	}
-	result += "}"
-	return result
-}
+	// Parse field specifications into Field structs
 
-// goType maps GraphQL types to Go types.
-func goType(graphqlType string) string {
-	switch graphqlType {
-	case "String":
-		return "string"
-	case "Int":
-		return "int"
-	case "Float":
-		return "float64"
-	case "Boolean":
-		return "bool"
-	default:
-		return "interface{}" // Default to interface{} for complex or unknown types
+	// Process each template for types
+	templateFiles := []string{"inputTypes.go.tpl", "type.go.tpl"}
+	for _, t := range templateFiles {
+		templatePath := fmt.Sprintf("templates/types/%s", t)
+		outputPath := filepath.Join(baseDir, strings.TrimSuffix(t, ".tpl"))
+		if err := processTemplate(templatePath, outputPath, map[string]interface{}{
+			"Namespace":           getCurrentDir(), // Current dir is the namespace
+			"ModuleName":          moduleName,
+			"ModuleNameLowerCase": strings.ToLower(moduleName),
+			"ModuleNameCapital":   strings.Title(moduleName),
+			"Fields":              fields,
+		}, typesTemplates); err != nil {
+			return err
+		}
 	}
-}
 
-// PrintStructure prints the structure of the type to standard output, for example purposes.
-func (gt *GraphQLType) PrintStructure() {
-	fmt.Println("GraphQL Type:", gt.Name)
-	for _, field := range gt.Fields {
-		fmt.Println("Field:", field.Name, "Type:", field.Type)
-	}
+	return nil
 }

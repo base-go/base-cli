@@ -2,20 +2,38 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 )
 
 // newCmd represents the new command
 var newCmd = &cobra.Command{
-	Use:   "new [name]",
-	Short: "Creates a new project or entity",
-	Long: `Creates a new project or entity with the specified name.
-Example usage:
-	base new projectName`,
-	Args: cobra.MinimumNArgs(1),
+	Use:   "new [Project]",
+	Short: "Create a new BaseQL project",
+	Long:  `Clone the [NAMESPACE] template and create a new BaseQL project with the specified name.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("New project created with name:", args[0])
+		project := args[0]
+
+		// Clone [NAMESPACE] to a temporary directory
+		tempDir := "/tmp/[NAMESPACE]-clone"
+		_, err := exec.Command("git", "clone", "https://github.com/base-go/[NAMESPACE].git", tempDir).Output()
+		if err != nil {
+			fmt.Println("Error cloning [NAMESPACE]:", err)
+			return
+		}
+
+		// Rename directory to project name
+		newDir := fmt.Sprintf("./%s", project)
+		err = os.Rename(tempDir, newDir)
+		if err != nil {
+			fmt.Println("Error renaming directory:", err)
+			return
+		}
+
+		fmt.Printf("Created new BaseQL project '%s'\n", project)
 	},
 }
 

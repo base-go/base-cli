@@ -18,8 +18,8 @@ func Update{{.ModuleNameCapital}}(input types.Update{{.ModuleNameCapital}}Input)
 
     // Update only the fields that were actually provided
     {{- range .Fields }}
-    if input.{{.Name}} != nil {
-        {{$.ModuleNameLowerCase}}.{{.Name}} = *input.{{.Name}}
+    if input.{{.TitledName}} != nil {
+        {{$.ModuleNameLowerCase}}.{{.TitledName}} = *input.{{.TitledName}}
     }
     {{- end }}
 
@@ -46,7 +46,7 @@ func Update{{.ModuleNameCapital}}Field() *graphql.Field {
                         },
                         {{- range .Fields }}
                         "{{.Name}}": &graphql.InputObjectFieldConfig{
-                            Type: graphql.NewNonNull({{.GqlType}}), // Use dynamic GraphQL types
+                            Type: graphql.{{.GqlType}}, // Use dynamic GraphQL types
                         },
                         {{- end }}
                     },
@@ -58,7 +58,7 @@ func Update{{.ModuleNameCapital}}Field() *graphql.Field {
             updateInput := types.Update{{.ModuleNameCapital}}Input{
                 ID:      inputMap["id"].(int), // Ensure casting matches the ID type
                 {{- range .Fields }}
-                {{.Name}}: optional{{.GoType}}(inputMap["{{.Name}}"]),
+                {{.TitledName}}: optionalString(inputMap["{{.Name}}"]),
                 {{- end }}
             }
             return Update{{.ModuleNameCapital}}(updateInput)
@@ -67,9 +67,10 @@ func Update{{.ModuleNameCapital}}Field() *graphql.Field {
 }
 
 // This needs to be adjusted if you support more types than strings.
-func optional{{.GoType}}(val interface{}) *{{.GoType}} {
-    if v, ok := val.({{.GoType}}); ok {
-        return &v
-    }
-    return nil
+
+func optionalString(val interface{}) *string {
+	if str, ok := val.(string); ok {
+		return &str
+	}
+	return nil
 }

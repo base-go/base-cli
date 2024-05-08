@@ -9,7 +9,7 @@ import (
 type {{.ModuleNameCapital}} struct {
     gorm.Model
     {{- range .Fields }}
-    {{.TitledName}} {{.GoType}} `gorm:"column:{{.LowerName}};json:\"{{.LowerName}}\""`
+    {{.TitledName}} {{.Type}}
     {{- end }}
 }
 

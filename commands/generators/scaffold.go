@@ -63,7 +63,7 @@ func generateMain(rootDir, moduleName string) error {
 
 	// Parse and execute template
 	tmpl := template.Must(template.New("main").Parse(string(templateContent)))
-	outputPath := filepath.Join(rootDir, "app", moduleName, "main.go")
+	outputPath := filepath.Join(rootDir, "app", strings.ToLower(moduleName), "main.go")
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func generateMain(rootDir, moduleName string) error {
 
 func generateScaffold(moduleName string, fields []Field) error {
 	// Create module directory
-	moduleDir := filepath.Join(rootDir, "app", moduleName)
+	moduleDir := filepath.Join(rootDir, "app", strings.ToLower(moduleName))
 	if err := os.MkdirAll(moduleDir, os.ModePerm); err != nil {
 		return err
 	}

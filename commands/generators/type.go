@@ -41,7 +41,7 @@ Example usage:
 }
 
 func generateTypes(moduleName string, fields []Field) error {
-	baseDir := filepath.Join("app", moduleName, "types")
+	baseDir := filepath.Join("app", strings.ToLower(moduleName), "types")
 	if err := os.MkdirAll(baseDir, os.ModePerm); err != nil {
 		return err
 	}

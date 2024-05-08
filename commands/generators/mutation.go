@@ -40,7 +40,7 @@ Example usage:
 }
 
 func generateMutations(moduleName string, fields []Field) error {
-	baseDir := filepath.Join("app", moduleName, "mutations")
+	baseDir := filepath.Join("app", strings.ToLower(moduleName), "mutations")
 	if err := os.MkdirAll(baseDir, os.ModePerm); err != nil {
 		return err
 	}

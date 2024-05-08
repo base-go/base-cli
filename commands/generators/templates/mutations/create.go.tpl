@@ -11,7 +11,7 @@ import (
 func Create{{.ModuleNameCapital}}(input types.{{.ModuleNameCapital}}Input) (*types.{{.ModuleNameCapital}}, error) {
 	{{.ModuleNameLowerCase}} := &types.{{.ModuleNameCapital}}{
 		{{ range .Fields }}
-		{{.Name}}: input.{{.Name}},
+		{{.TitledName}}: input.{{.TitledName}},
 		{{- end }}
 	}
 	if err := database.DB.Create({{.ModuleNameLowerCase}}).Error; err != nil {
@@ -32,7 +32,7 @@ func Create{{.ModuleNameCapital}}Field() *graphql.Field {
                     Fields: graphql.InputObjectConfigFieldMap{
                         {{- range .Fields }}
                         "{{.Name}}": &graphql.InputObjectFieldConfig{
-                            Type: graphql.NewNonNull({{.GqlType}}), // Adjusted to use dynamic type
+                            Type: graphql.{{.GqlType}}, // Adjusted to use dynamic type
                         },
                         {{- end }}
                     },
@@ -43,7 +43,7 @@ func Create{{.ModuleNameCapital}}Field() *graphql.Field {
             input, _ := p.Args["input"].(map[string]interface{})
             {{.ModuleNameLowerCase}}Input := types.{{.ModuleNameCapital}}Input{
                 {{- range .Fields }}
-                {{.Name}}: input["{{.Name}}"].({{.GoType}}), // Adjusted for dynamic casting
+                {{.TitledName}}: input["{{.Name}}"].({{.Type}}), // Adjusted for dynamic casting
                 {{- end }}
             }
             return Create{{.ModuleNameCapital}}({{.ModuleNameLowerCase}}Input)

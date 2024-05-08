@@ -11,6 +11,7 @@ import (
 
 type Field struct {
 	Name       string
+	Type       string
 	GoType     string
 	GqlType    string
 	TitledName string
@@ -45,7 +46,8 @@ func parseFields(fieldSpecs []string) ([]Field, error) {
 
 		fields = append(fields, Field{
 			Name:   fieldName,
-			GoType: fieldType,
+			Type:   fieldType,
+			GoType: ValidFieldTypes[fieldType],
 			// Define GQL types based on Go types
 			// You can extend this mapping as needed
 			GqlType:    getGqlType(fieldType),

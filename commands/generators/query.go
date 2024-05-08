@@ -34,7 +34,7 @@ Example usage:
 }
 
 func generateQueries(moduleName string) error {
-	baseDir := filepath.Join("app", moduleName, "queries")
+	baseDir := filepath.Join("app", strings.ToLower(moduleName), "queries")
 	if err := os.MkdirAll(baseDir, os.ModePerm); err != nil {
 		return err
 	}

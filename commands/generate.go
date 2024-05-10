@@ -19,8 +19,6 @@ var generateCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(generateCmd)
 	// Here you would add subcommands
-	generateCmd.AddCommand(generators.ScaffoldCmd)
-	generateCmd.AddCommand(generators.QueryCmd)
-	generateCmd.AddCommand(generators.MutationCmd)
-	generateCmd.AddCommand(generators.TypeCmd)
+	generateCmd.AddCommand(generators.ModuleCmd)
+
 }

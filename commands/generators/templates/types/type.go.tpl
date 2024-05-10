@@ -1,29 +1,23 @@
-package types
+package {{.PackageName}}
 
-import (
-    "github.com/graphql-go/graphql"
-    "gorm.io/gorm"
-)
+import "github.com/graphql-go/graphql"
 
-// {{.ModuleNameCapital}} struct for GORM model
-type {{.ModuleNameCapital}} struct {
-    gorm.Model
-    {{- range .Fields }}
-    {{.TitledName}} {{.Type}}
-    {{- end }}
+// {{.StructName}} defines the structure for the {{.StructName}} model
+type {{.StructName}} struct {
+	ID    uint   `json:"id"`
+	{{range .Fields}} {{.Name}} {{.Type}} `json:"{{.JsonName}}"`{{end}}
 }
 
-// {{.ModuleNameCapital}}Type for GraphQL schema
-var {{.ModuleNameCapital}}Type = graphql.NewObject(
-    graphql.ObjectConfig{
-        Name: "{{.ModuleNameCapital}}",
-        Fields: graphql.Fields{
-            {{- range .Fields }}
-            "{{.LowerName}}": &graphql.Field{
-                Type: graphql.{{.GqlType}},
-                Description: "Field for {{.TitledName}}",
-            },
-            {{- end }}
-        },
-    },
-)
+// {{.TypeName}} defines the GraphQL type for {{.StructName}}
+var {{.TypeName}} = graphql.NewObject(graphql.ObjectConfig{
+	Name: "{{.StructName}}",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type: graphql.Int,
+		},
+		{{range .Fields}} "{{.Name}}": &graphql.Field{
+			Type: graphql.{{.GraphQLType}},
+		},
+		{{end}}
+	},
+})

@@ -1,46 +1,40 @@
-package queries
+package {{.PackageName}}
 
 import (
-    "{{.Namespace}}/app/{{.ModuleNameLowerCase}}/types"
-    "{{.Namespace}}/core/database"
-    "errors"
-
-    "github.com/graphql-go/graphql"
+	"base-project/core/database"
+	"github.com/graphql-go/graphql"
 )
 
-func GetAll{{.ModuleNameCapital}}sField() *graphql.Field {
-    return &graphql.Field{
-        Type:        graphql.NewList(types.{{.ModuleNameCapital}}Type),
-        Description: "Get all {{.ModuleNameLowerCase}}s",
-        Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-            var {{.ModuleNameLowerCase}}s []types.{{.ModuleNameCapital}}
-            if err := database.DB.Find(&{{.ModuleNameLowerCase}}s).Error; err != nil {
-                return nil, err // Consider wrapping with a more user-friendly message
-            }
-            return {{.ModuleNameLowerCase}}s, nil
-        },
-    }
+// All retrieves all {{.StructName}}s
+func All() *graphql.Field {
+	return &graphql.Field{
+		Type: graphql.NewList({{.TypeName}}),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			var items []{{.StructName}}
+			if err := database.DB.Find(&items).Error; err != nil {
+				return nil, err
+			}
+			return items, nil
+		},
+	}
 }
 
-func Get{{.ModuleNameCapital}}ByIDField() *graphql.Field {
-    return &graphql.Field{
-        Type:        types.{{.ModuleNameCapital}}Type,
-        Description: "Get {{.ModuleNameLowerCase}} by ID",
-        Args: graphql.FieldConfigArgument{
-            "id": &graphql.ArgumentConfig{
-                Type: graphql.NewNonNull(graphql.Int),
-            },
-        },
-        Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-            id, ok := params.Args["id"].(int)
-            if !ok {
-                return nil, errors.New("id must be an integer")
-            }
-            var {{.ModuleNameLowerCase}} types.{{.ModuleNameCapital}}
-            if err := database.DB.First(&{{.ModuleNameLowerCase}}, id).Error; err != nil {
-                return nil, err // Consider wrapping with a more user-friendly message
-            }
-            return &{{.ModuleNameLowerCase}}, nil
-        },
-    }
+// ByID retrieves a single {{.StructName}} by its ID
+func ByID() *graphql.Field {
+	return &graphql.Field{
+		Type: {{.TypeName}},
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.Int),
+			},
+		},
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			id, _ := p.Args["id"].(int)
+			item := {{.StructName}}{}
+			if err := database.DB.First(&item, id).Error; err != nil {
+				return nil, err
+			}
+			return item, nil
+		},
+	}
 }

@@ -8,6 +8,7 @@ import (
 // {{.ModuleNameCapital}} struct
 type {{.ModuleNameCapital}} struct {
 	gorm.Model
+	ID int
 	{{range .Fields}} 
 	{{.TitledName}} {{.Type}} 
 	{{end}}
@@ -32,6 +33,7 @@ var {{.ModuleNameCapital}}Type = graphql.NewObject(
 
 // {{.ModuleNameCapital}}Input for   GORM model
 type {{.ModuleNameCapital}}Input struct {
+	ID      int    `json:"id"`
 	{{range .Fields}} 
 	{{.TitledName}} {{.Type}} `json:"{{.Name}}"`
 	{{end}}

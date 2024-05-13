@@ -1,23 +1,45 @@
-package {{.PackageName}}
+package types
 
-import "github.com/graphql-go/graphql"
+import (
+	"github.com/graphql-go/graphql"
+	"gorm.io/gorm"
+)
 
-// {{.StructName}} defines the structure for the {{.StructName}} model
-type {{.StructName}} struct {
-	ID    uint   `json:"id"`
-	{{range .Fields}} {{.Name}} {{.Type}} `json:"{{.JsonName}}"`{{end}}
+// {{.ModuleNameCapital}} struct
+type {{.ModuleNameCapital}} struct {
+	gorm.Model
+	{{range .Fields}} 
+	{{.TitledName}} {{.Type}} 
+	{{end}}
 }
 
-// {{.TypeName}} defines the GraphQL type for {{.StructName}}
-var {{.TypeName}} = graphql.NewObject(graphql.ObjectConfig{
-	Name: "{{.StructName}}",
-	Fields: graphql.Fields{
-		"id": &graphql.Field{
-			Type: graphql.Int,
+// {{.ModuleNameCapital}}Type for GraphQL schema
+var {{.ModuleNameCapital}}Type = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "{{.ModuleNameCapital}}",
+		Fields: graphql.Fields{
+			"id": &graphql.Field{
+				Type: graphql.Int,
+			},
+			{{range .Fields}} 
+			"{{.Name}}": &graphql.Field{
+				Type: {{.GqlType}},
+			},
+			{{end}}
 		},
-		{{range .Fields}} "{{.Name}}": &graphql.Field{
-			Type: graphql.{{.GraphQLType}},
-		},
-		{{end}}
 	},
-})
+)
+
+// {{.ModuleNameCapital}}Input for   GORM model
+type {{.ModuleNameCapital}}Input struct {
+	{{range .Fields}} 
+	{{.TitledName}} {{.Type}} `json:"{{.Name}}"`
+	{{end}}
+}
+
+type Update{{.ModuleNameCapital}}Input struct {
+	ID      int     `json:"id"`
+	{{range .Fields}} 
+	{{.TitledName}} *{{.Type}} `json:"{{.Name}}"`
+	{{end}}
+}

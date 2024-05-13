@@ -46,7 +46,7 @@ func Update{{.ModuleNameCapital}}Field() *graphql.Field {
                         },
                         {{- range .Fields }}
                         "{{.Name}}": &graphql.InputObjectFieldConfig{
-                            Type: graphql.{{.GqlType}}, // Use dynamic GraphQL types
+                            Type: {{.GqlType}}, // Use dynamic GraphQL types
                         },
                         {{- end }}
                     },

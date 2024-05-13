@@ -32,7 +32,7 @@ func Create{{.ModuleNameCapital}}Field() *graphql.Field {
                     Fields: graphql.InputObjectConfigFieldMap{
                         {{- range .Fields }}
                         "{{.Name}}": &graphql.InputObjectFieldConfig{
-                            Type: graphql.{{.GqlType}}, // Adjusted to use dynamic type
+                            Type: {{.GqlType}}, // Adjusted to use dynamic type
                         },
                         {{- end }}
                     },

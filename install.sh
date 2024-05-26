@@ -36,16 +36,16 @@ go mod tidy || { echo "Failed to tidy module."; exit 1; }
 
 # Step 5: Build the tool
 echo "Building the tool..."
-go build -v -o baseql || { echo "Failed to build the tool."; exit 1; }
+go build -v -o base || { echo "Failed to build the tool."; exit 1; }
 
 # Step 6: Install the binary
 echo "Installing the tool..."
-if [ -f "$BIN_PATH/baseql" ]; then
+if [ -f "$BIN_PATH/base" ]; then
   echo "Existing binary found. Removing..."
-  sudo rm -f "$BIN_PATH/baseql" || { echo "Failed to remove existing binary."; exit 1; }
+  sudo rm -f "$BIN_PATH/base" || { echo "Failed to remove existing binary."; exit 1; }
 fi
 
-sudo mv baseql "$BIN_PATH/baseql" || { echo "Failed to install the tool."; exit 1; }
+sudo mv base "$BIN_PATH/base" || { echo "Failed to install the tool."; exit 1; }
 
 echo "Installation completed successfully."
-echo "You can now use 'baseql' from anywhere in your terminal."
+echo "You can now use 'base' from anywhere in your terminal."
